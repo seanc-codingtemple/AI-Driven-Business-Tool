@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: aibusiness-backend
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn backend.wsgi:application"
+    buildScript: "./render-build.sh"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: backend.settings
+      - key: SECRET_KEY
+        generateValue: true
+      - fromDatabase:
+          name: aibusiness-db
+          property: connectionString
+          envVarKey: DATABASE_URL
+
+databases:
+  - name: aibusiness-db

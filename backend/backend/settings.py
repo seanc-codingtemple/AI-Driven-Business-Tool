@@ -15,7 +15,8 @@ from pathlib import Path
 import os
 
 from dotenv import load_dotenv
-load_dotenv() 
+load_dotenv()
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,12 +28,12 @@ sys.path.insert(0, str(BASE_DIR))
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-74c!wgyn#@ojajjw=0ye#%#0)1jrvb*io_o8x#6@(45=fr3yg#'
+SECRET_KEY = os.getenv('SECRET_KEY', 'insecure-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")  # Best practice: store API keys in environment variables
 ANALYSIS_TYPES = ['market_position', 'growth_potential', 'swot']
 DEFAULT_ANALYSIS_TYPE = 'market_position'
@@ -86,6 +87,7 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -153,7 +155,12 @@ FRONTEND_URL = 'http://localhost:3000'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {}
+default_db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', default_db_url), conn_max_age=600
+    )
+}
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -196,6 +203,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
