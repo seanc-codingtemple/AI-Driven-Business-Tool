@@ -11,6 +11,8 @@ import {
 import AnalysisResults from "./AnalysisResults";
 import { AnalysisResult } from "../types/FormTypes";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+
 const parseAnalysisResult = (text: string) => {
     // split into sections
     const sections = text.split("\n\n").reduce((acc, block) => {
@@ -272,7 +274,7 @@ const BusinessForm = () => {
             }
 
             const reportResponse = await fetch(
-                `http://localhost:8000/api/reports/${reportId}/`,
+                `${API_BASE_URL}/api/reports/${reportId}/`,
                 {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
@@ -333,7 +335,7 @@ const BusinessForm = () => {
             if (refreshToken) {
                 try {
                     const refreshResponse = await fetch(
-                        "http://localhost:8000/api/token/refresh/",
+                        `${API_BASE_URL}/api/token/refresh/`,
                         {
                             method: "POST",
                             headers: {
@@ -361,7 +363,7 @@ const BusinessForm = () => {
                 }
             }
 
-            const response = await fetch("http://localhost:8000/api/analyze/", {
+            const response = await fetch(`${API_BASE_URL}/api/analyze/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

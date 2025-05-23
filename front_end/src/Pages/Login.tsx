@@ -4,6 +4,8 @@ import { AuthContext } from "../Provider/Provider";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+
 const Login = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -19,7 +21,7 @@ const Login = () => {
         setError(null);
 
         try {
-            const response = await fetch("http://localhost:8000/api/token/", {
+            const response = await fetch(`${API_BASE_URL}/api/token/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
